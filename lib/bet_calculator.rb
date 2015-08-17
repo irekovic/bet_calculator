@@ -4,7 +4,7 @@ require 'bet_calculator/bets'
 require 'bet_calculator/bet_types'
 
 module BetCalculator
-	def self.calculate bet_type, each_way_bet = false
+	def self.calculate bet_type, calculator = WinOnlyCalculator.new
 		result = { 
 			unit_stake:     0.0,
 			number_of_bets:   0, 
@@ -13,24 +13,13 @@ module BetCalculator
 			total_profit:   0.0 
 		}
 		
-		if (each_way_bet)
-			result = bet_type.each_bet.lazy.flat_map{|b| b.units.to_a }.reduce(result) do |result, unit|
+		bet_type.bets.each do |bet|
+			bet.units(calculator).each do |unit|
 				result[:number_of_bets] += 1
 				result[:total_stake]    += unit.stake
 				result[:total_return]   += unit.max_return
-				result
-			end
-		else
-			# puts bet_type
-			result = bet_type.bets.flat_map{|b| b.units.to_a }.reduce(result) do |result, unit|
-				# puts unit.stake
-				result[:number_of_bets] += 1
-				result[:total_stake]    += unit.stake
-				result[:total_return]   += unit.max_return
-				result
 			end
 		end
-
 
 		result[:unit_stake]   = result[:total_stake] / result[:number_of_bets] unless result[:number_of_bets] <= 0
 		result[:total_profit] = result[:total_return] - result[:total_stake]
@@ -38,14 +27,14 @@ module BetCalculator
 		return result
 	end
 
-	class EachWay
-		def initialize(bet)
-			@bet = bet
-		end
+	# class EachWay
+	# 	def initialize(bet)
+	# 		@bet = bet
+	# 	end
 
-		def stake
-			@bet.stake * 2
-		end
+	# 	def stake
+	# 		@bet.stake * 2
+	# 	end
 
 		# def single_each_way_units
 		# 	stake = 10.00
@@ -77,17 +66,17 @@ module BetCalculator
 		# def conditional_each_way_win_precedence
 		# end
 
-		def max_return
-			stake = @bet.stake
-			price = @bet.price
-			place_reduction = @bet.place_reduction
+	# 	def max_return
+	# 		stake = @bet.stake
+	# 		price = @bet.price
+	# 		place_reduction = @bet.place_reduction
 
-			win_odds = price - 1
-			place_odds = win_odds * place_reduction
-			place_price = place_odds + 1
-			win_part = stake * price
-			place_part = stake * place_price
-			return win_part + place_part
-		end
-	end
+	# 		win_odds = price - 1
+	# 		place_odds = win_odds * place_reduction
+	# 		place_price = place_odds + 1
+	# 		win_part = stake * price
+	# 		place_part = stake * place_price
+	# 		return win_part + place_part
+	# 	end
+	# end
 end

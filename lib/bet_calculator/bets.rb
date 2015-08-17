@@ -4,47 +4,68 @@ module BetCalculator
 		def initialize(price, place_reduction = 1.0)
 			raise IllegalArgument unless place_reduction.to_f > 0 and place_reduction.to_f <= 1
 			raise IllegalArgument unless price.to_f > 0
-			@price, @place_reduction = price.to_f, place_reduction.to_f
+			@price 						= price.to_f
+			@place_reduction 	= place_reduction.to_f
+		end
+
+		def place_price
+			to_price(to_odd(@price) * @place_reduction)
 		end
 
 		def to_f
 			return @price
 		end
+
+		private
+			def to_price(odd)
+				odd.to_f + 1.0
+			end
+
+			def to_odd(price)
+				price.to_f - 1.0
+			end
 	end
 
-	class Bet
-		def units
-			return enum_for(:units) unless block_given?
-			yield Unit.new @stake, max_return		
-		end
-	end 
-
-	class SingleBet < Bet
-		attr_reader :stake, :price
-		def initialize(stake, price)
+	class SingleBet
+		attr_reader :stake
+		def initialize(stake, leg)
+			raise "You need a Leg and not #{leg.class} #{leg}" unless leg.kind_of? Leg
 			@stake = stake.to_f
-			@price = price.to_f
+			@leg = leg 
 		end
 
-		def max_return
-			@stake * @price
+		def units(calculator)
+			calculator.single self
+		end
+
+		def price
+			@leg.price
+		end
+
+		def place_price
+			@leg.place_price
 		end
 	end
 
-	class MultipleBet < Bet
+	class MultipleBet
 		attr_reader :stake
 		def initialize(stake, prices)
 			@stake = stake.to_f
 			raise YouNeedMorePricesForMultiple unless prices.size > 1
-			@prices = prices.collect(&:to_f)
+			@legs = prices
 		end
 
-		def max_return
-			@stake * @prices.reduce(1, :*)
+		def units(calculator)
+			calculator.multiple self
 		end
+
+		def legs
+			@legs.each
+		end
+
 	end
 
-	class ConditionalBet < Bet
+	class ConditionalBet
 		attr_reader :stake
 		def initialize(stake, max_stake, first, second)
 			@stake = stake.to_f
@@ -53,6 +74,10 @@ module BetCalculator
 			@second = second.collect(&:to_f).reduce(1,:*)
 		end
 
+		def units(calculator)
+			calculator.conditional self
+		end
+		
 		def max_return
 			result = @stake * @first
 			sure_win = 0

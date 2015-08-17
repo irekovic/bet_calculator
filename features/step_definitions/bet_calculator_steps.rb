@@ -3,22 +3,30 @@ require 'bet_calculator'
 ERROR_TOLERANCE = 0.005
 
 Given(/^an? "([^"]*)" bet with stake "([^"]*)" on "([^"]*)"$/) do |type, stake, prices|
-  @bet = Object::const_get("BetCalculator::#{type}").new stake, prices.split(/,/).map { |p| BetCalculator::Leg.new p, 1 }
+  clazz = Object::const_get("BetCalculator::#{type}")
+  legs = prices.split(/,/).map do |price|
+    BetCalculator::Leg.new price, 1.0
+  end
+
+  @bet = clazz.new stake, legs
 end
 
 Given(/^a "([^"]*)" bet with stake "([^"]*)" on "([^"]*)" with place reduction "([^"]*)"$/) do |type, stake, prices, reduction_factors|
 	factors = reduction_factors.split(/,/).each.cycle
-  @bet = Object::const_get("BetCalculator::#{type}").new stake, prices.split(/,/).map do |price|
-  	BetCalculator::Leg.new price, factors.next
+  clazz = Object::const_get("BetCalculator::#{type}")
+  legs = prices.split(/,/).map do |price|
+    BetCalculator::Leg.new price, factors.next
   end
+
+  @bet = clazz.new stake, legs
 end
 
 When(/^I calculate a bet$/) do
-	@calculation_result = BetCalculator.calculate @bet
+	@calculation_result = BetCalculator.calculate @bet, BetCalculator::WinOnlyCalculator.new
 end
 
 When(/^I calculate each\-way bet$/) do
-  @calculation_result = BetCalculator.each_way @bet
+  @calculation_result = BetCalculator.calculate @bet, BetCalculator::EachWayCalculator.new
 end
 
 Then(/^unit_stake should be "([^"]*)"$/) do |unit_stake|

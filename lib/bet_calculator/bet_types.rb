@@ -4,10 +4,10 @@ module BetCalculator
 		def self.extended(base)
 			puts "Extend betType by #{base}"
 		end
-		
-		def initialize(stake, prices)
+
+		def initialize(stake, legs)
 			@stake = stake.to_f
-			@prices = prices.to_a
+			@prices = legs.to_a
 		end
 
 		def bets
