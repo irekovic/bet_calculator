@@ -16,7 +16,14 @@ module BetCalculator
 
 		def multiple(bet)
 			Enumerator.new do |y|
-				y.yield Unit.new bet.stake, bet.stake * bet.legs.map(&:price).reduce(1, :*)
+				stake = bet.stake
+				_return = 0
+
+				bet.legs.each do |leg|
+					_return = stake * leg.price
+					stake = _return
+				end
+				y << Unit.new(bet.stake, _return)
 			end
 		end
 
@@ -37,12 +44,26 @@ module BetCalculator
 
 		def multiple(bet)
 			Enumerator.new do |y|
-				y << Unit.new(bet.stake, bet.stake * bet.legs.map(&:price).reduce(1, :*))
-				y << Unit.new(bet.stake, bet.stake * bet.legs.map(&:place_price).reduce(1, :*))
+				winStake = bet.stake
+				placeStake = bet.stake
+
+				winReturn = 0.0
+				placeReturn = 0.0
+
+				bet.legs.each do |leg|
+					winReturn = winStake * leg.price
+					placeReturn = placeStake * leg.place_price
+					winStake = winReturn
+					placeStake = placeReturn
+				end
+
+				y << Unit.new(bet.stake, winReturn)
+				y << Unit.new(bet.stake, placeReturn)
 			end
 		end
 
 		def conditional(bet)
+			raise "Not yet implemented each way calculation over conditional bets"
 			Enumerator.new do |y|
 			end
 		end
