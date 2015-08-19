@@ -64,22 +64,20 @@ module BetCalculator
 		def conditional(bet)
 			Enumerator.new do |y|
 				first, *rest = *bet.bets
-				win_rollover   = 0.0
-				place_rollover = 0.0
+				rollover   = 0.0
 				win_return, place_return = accumulate(bet.stake, bet.stake, first.legs)
 
 				rest.each do |b|
-					win_stake       = [win_return,   bet.max_stake].min
-					place_stake     = [place_return, bet.max_stake].min
-
-					win_rollover   += win_return   - win_stake
-					place_rollover += place_return - place_stake
-
-					win_return, place_return = accumulate(win_stake, place_stake, b.legs)
+					total_return = win_return + place_return
+					stake = [total_return, bet.max_stake * 2].min
+					rollover += total_return - stake
+					stake /= 2
+					win_return, place_return = accumulate(stake, stake, b.legs)
 				end
 
-				y << Unit.new(bet.stake, win_return + win_rollover)
-				y << Unit.new(bet.stake, place_return + place_rollover)
+				half_of_rollover = rollover / 2
+				y << Unit.new(bet.stake, win_return + half_of_rollover)
+				y << Unit.new(bet.stake, place_return + half_of_rollover)
 			end
 		end
 
