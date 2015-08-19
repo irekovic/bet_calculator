@@ -206,7 +206,8 @@ module BetCalculator
 		def bets
 			Enumerator.new do |y|
 				@prices.permutation(2) do |prices|
-					y << ConditionalBet.new(@stake, @stake, prices[0], prices[1..-1])
+					first, second = *prices
+					y << ConditionalBet.new(@stake, @stake, SingleBet.new(0, first), SingleBet.new(0, second))
 				end
 			end
 		end
@@ -216,7 +217,8 @@ module BetCalculator
 		def bets
 			Enumerator.new do |y|
 				@prices.permutation(2) do |prices|
-					y << ConditionalBet.new(@stake, @stake * 2, prices[0], prices[1..-1])
+					first, second = *prices
+					y << ConditionalBet.new(@stake, @stake * 2, SingleBet.new(0, first), SingleBet.new(0, second))
 				end
 			end
 		end
@@ -226,9 +228,7 @@ module BetCalculator
 		def bets
 			Enumerator.new do |y|
 				Trixie.new(@stake, @prices).bets.each { |e| y << e }
-				@prices.permutation(2) do |prices|
-					y << ConditionalBet.new(@stake, @stake, prices[0], prices[1..-1])
-				end
+				SingleStakesAbout.new(@stake, @prices).bets.each { |e| y << e }
 			end
 		end
 	end
@@ -237,9 +237,7 @@ module BetCalculator
 		def bets
 			Enumerator.new do |y|
 				Yankee.new(@stake, @prices).bets.each { |e| y << e }
-				@prices.permutation(2) do |prices|
-					y << ConditionalBet.new(@stake, @stake, prices[0], prices[1..-1])
-				end
+				SingleStakesAbout.new(@stake, @prices).bets.each { |e| y << e }
 			end
 		end
 	end
@@ -248,9 +246,7 @@ module BetCalculator
 		def bets
 			Enumerator.new do |y|
 				Canadian.new(@stake, @prices).bets.each { |e| y << e }
-				@prices.permutation(2) do |prices|
-					y << ConditionalBet.new(@stake, @stake, prices[0], prices[1..-1])
-				end
+				SingleStakesAbout.new(@stake, @prices).bets.each { |e| y << e }
 			end
 		end
 	end
@@ -259,9 +255,7 @@ module BetCalculator
 		def bets
 			Enumerator.new do |y|
 				Heinz.new(@stake, @prices).bets.each { |e| y << e }
-				@prices.permutation(2) do |prices|
-					y << ConditionalBet.new(@stake, @stake, prices[0], prices[1..-1])
-				end
+				SingleStakesAbout.new(@stake, @prices).bets.each { |e| y << e }
 			end
 		end
 	end
@@ -270,9 +264,7 @@ module BetCalculator
 		def bets
 			Enumerator.new do |y|
 				SuperHeinz.new(@stake, @prices).bets.each { |e| y << e }
-				@prices.permutation(2) do |prices|
-					y << ConditionalBet.new(@stake, @stake, prices[0], prices[1..-1])
-				end
+				SingleStakesAbout.new(@stake, @prices).bets.each { |e| y << e }
 			end
 		end
 	end
@@ -281,9 +273,7 @@ module BetCalculator
 		def bets
 			Enumerator.new do |y|
 				Goliath.new(@stake, @prices).bets.each { |e| y << e }
-				@prices.permutation(2) do |prices|
-					y << ConditionalBet.new(@stake, @stake, prices[0], prices[1..-1])
-				end
+				SingleStakesAbout.new(@stake, @prices).bets.each { |e| y << e }
 			end
 		end				
 	end
@@ -293,7 +283,7 @@ module BetCalculator
 			Enumerator.new do |y|
 				@prices.each do |price|
 					rest = @prices - [price]
-					y << ConditionalBet.new(@stake, @stake, price, rest)
+					y << ConditionalBet.new(@stake, @stake, SingleBet.new(0, price), MultipleBet.new(0, rest))
 				end
 			end
 		end
@@ -304,7 +294,7 @@ module BetCalculator
 			Enumerator.new do |y|
 				@prices.each do |price|
 					rest = @prices - [price]
-					y << ConditionalBet.new(@stake, @stake * 2, price, rest)
+					y << ConditionalBet.new(@stake, @stake * 2, SingleBet.new(0, price), MultipleBet.new(0, rest))
 				end
 			end
 		end

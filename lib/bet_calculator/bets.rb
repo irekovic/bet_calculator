@@ -26,12 +26,19 @@ module BetCalculator
 			end
 	end
 
-	class SingleBet
+	class Bet
+	end
+
+	class SingleBet < Bet
 		attr_reader :stake
 		def initialize(stake, leg)
 			raise "You need a Leg and not #{leg.class} #{leg}" unless leg.kind_of? Leg
 			@stake = stake.to_f
 			@leg = leg 
+		end
+
+		def with_stake(stake=0)
+			SingleBet.new stake, @leg
 		end
 
 		def units(calculator)
@@ -45,14 +52,22 @@ module BetCalculator
 		def place_price
 			@leg.place_price
 		end
+
+		def legs
+			[@leg]
+		end
 	end
 
-	class MultipleBet
+	class MultipleBet < Bet
 		attr_reader :stake
 		def initialize(stake, prices)
 			@stake = stake.to_f
-			raise YouNeedMorePricesForMultiple unless prices.size > 1
+			raise "You need more than 1 leg for multiple (#{prices.size})" unless prices.size > 1
 			@legs = prices
+		end
+
+		def with_stake(stake = 0)
+			MultipleBet.new stake, @legs
 		end
 
 		def units(calculator)
@@ -65,29 +80,20 @@ module BetCalculator
 
 	end
 
-	class ConditionalBet
-		attr_reader :stake
+	class ConditionalBet < Bet
+		attr_reader :stake, :max_stake, :bets
+
 		def initialize(stake, max_stake, first, second)
 			@stake = stake.to_f
 			@max_stake = max_stake.to_f
-			@first = first.to_f
-			@second = second.collect(&:to_f).reduce(1,:*)
+			raise "You need Bet and not #{first.class} for first bet" unless first.is_a? Bet
+			raise "You need Bet and not #{second.class} for second bet" unless first.is_a? Bet
+			@bets = [first] << second
 		end
+
 
 		def units(calculator)
 			calculator.conditional self
-		end
-		
-		def max_return
-			result = @stake * @first
-			sure_win = 0
-			if (result > 0)
-				stake = [result, @max_stake].min
-				sure_win += result - stake
-				result = stake * @second
-			end
-
-			result + sure_win
 		end
 	end
 end
