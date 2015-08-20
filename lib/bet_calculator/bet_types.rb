@@ -13,11 +13,6 @@ module BetCalculator
 		def bets
 			raise "You have to implement bets in #{self.class} and return enumeration of bets from it"
 		end
-
-		# def each_bet(&block)
-		# 	return enum_for(:each) unless block_given?
-		# 	each &block
-		# end
 	end
 
 	class Single < BetType

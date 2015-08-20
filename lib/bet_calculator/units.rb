@@ -46,6 +46,16 @@ module BetCalculator
 	end
 	
 	class EachWayCalculator
+		def initialize(options = {})
+			defaults = { multiples_formula: :w2w_p2p, atc_formula: :eq_div }
+			effective_values = defaults.merge options
+			@multiples_formula = effective_values[:multiples_formula]
+			@atc_formula = effective_values[:atc_formula]
+			# puts "@multiples_formula = #{@multiples_formula}, @atc_formula = #{@atc_formula}"
+			# p @multiples_formula
+			# p @atc_formula
+		end
+
 		def single(bet)
 			Enumerator.new do |y|
 				y << Unit.new(bet.stake, bet.stake * bet.price)
@@ -81,19 +91,29 @@ module BetCalculator
 			end
 		end
 
-		def accumulate(win_stake, place_stake, legs)
-			win_return = 0.0
-			place_return = 0.0
+		private 
+			def accumulate(win_stake, place_stake, legs)
+				win_return = 0.0
+				place_return = 0.0
 
-			legs.each do |leg|
-				win_return = win_stake * leg.price
-				place_return = place_stake * leg.place_price
-				# this is the place where we can insert :w2wp2p or :equaly_divided
-				win_stake = win_return
-				place_stake = place_return
+				legs.each do |leg|
+					win_return = win_stake * leg.price
+					place_return = place_stake * leg.place_price
+					
+					win_stake, place_stake = multiples_split win_return, place_return
+				end
+
+				return win_return, place_return
 			end
 
-			return win_return, place_return
-		end
+			def multiples_split(win, place)
+				case @multiples_formula
+				when :eq_div
+					half = (win + place) / 2
+					return half, half
+				else
+					return win, place
+				end
+			end
 	end
 end

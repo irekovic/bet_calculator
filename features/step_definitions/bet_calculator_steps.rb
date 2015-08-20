@@ -21,12 +21,18 @@ Given(/^a "([^"]*)" bet with stake "([^"]*)" on "([^"]*)" with place reduction "
   @bet = clazz.new stake, legs
 end
 
+
 When(/^I calculate a bet$/) do
 	@calculation_result = BetCalculator.calculate @bet, BetCalculator::WinOnlyCalculator.new
 end
 
 When(/^I calculate each\-way bet$/) do
   @calculation_result = BetCalculator.calculate @bet, BetCalculator::EachWayCalculator.new
+end
+
+When(/^I calculate each\-way bet accumulators settlet as "([^"]*)" and atc settled as "([^"]*)"$/) do |multiples_formula, atc_formula|
+  @calculation_result = BetCalculator.calculate @bet, 
+    BetCalculator::EachWayCalculator.new(multiples_formula: multiples_formula.to_sym, atc_formula: atc_formula.to_sym)
 end
 
 Then(/^unit_stake should be "([^"]*)"$/) do |unit_stake|
