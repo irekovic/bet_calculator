@@ -27,18 +27,16 @@ module BetCalculator
 	end
 
 	class Bet
+		def units(calculator)
+			raise "You have to implement #{self.class}units(calculator) method in a bet"
+		end
 	end
 
 	class SingleBet < Bet
 		attr_reader :stake
 		def initialize(stake, leg)
-			raise "You need a Leg and not #{leg.class} #{leg}" unless leg.kind_of? Leg
 			@stake = stake.to_f
 			@leg = leg 
-		end
-
-		def with_stake(stake=0)
-			SingleBet.new stake, @leg
 		end
 
 		def units(calculator)
@@ -52,23 +50,19 @@ module BetCalculator
 		def place_price
 			@leg.place_price
 		end
-
-		def legs
-			[@leg]
-		end
 	end
 
 	class MultipleBet < Bet
 		attr_reader :stake
 		def initialize(stake, prices)
 			@stake = stake.to_f
-			raise "You need more than 1 leg for multiple (#{prices.size})" unless prices.size > 1
-			@legs = prices
+			@legs = prices.to_a
+			raise "You need more than 1 leg for multiple (#{@legs.size})" unless @legs.size > 1
 		end
 
-		def with_stake(stake = 0)
-			MultipleBet.new stake, @legs
-		end
+		# def with_stake(stake = 0)
+		# 	MultipleBet.new stake, @legs
+		# end
 
 		def units(calculator)
 			calculator.multiple self
@@ -83,12 +77,10 @@ module BetCalculator
 	class ConditionalBet < Bet
 		attr_reader :stake, :max_stake, :bets
 
-		def initialize(stake, max_stake, first, second)
+		def initialize(stake, max_stake, bets)
 			@stake = stake.to_f
 			@max_stake = max_stake.to_f
-			raise "You need Bet and not #{first.class} for first bet" unless first.is_a? Bet
-			raise "You need Bet and not #{second.class} for second bet" unless first.is_a? Bet
-			@bets = [first] << second
+			@bets = bets
 		end
 
 

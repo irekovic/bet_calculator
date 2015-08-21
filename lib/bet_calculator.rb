@@ -13,7 +13,7 @@ module BetCalculator
 			total_profit:   0.0 
 		}
 		
-		bet_type.bets.each do |bet|
+		bet_type.bets.lazy.each do |bet|
 			bet.units(calculator).each do |unit|
 				result[:number_of_bets] += 1
 				result[:total_stake]    += unit.stake
