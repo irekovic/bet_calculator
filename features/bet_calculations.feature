@@ -50,7 +50,7 @@ Feature: Bet Calculation
 
 	Scenario Outline: calculating an EachWay bet
 		Given a "<bet_type>" bet with stake "<stake>" on "<price>" with place reduction "0.20"
-		When I calculate each-way bet accumulators settlet as "<M_F>" and atc settled as "<ATC_F>"
+		When I calculate each-way bet with accumulators settled as "<M_F>" and atc settled as "<ATC_F>"
 		Then number_of_bets should be "<number_of_bets>"
 		And total_stake should be "<total_stake>"
 		And total_return should be "<total_return>"
