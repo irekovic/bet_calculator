@@ -188,14 +188,14 @@ module BetCalculator
 	class Patent < BetType
 		def bets
 			Enumerator.new do |y|
-				@prices.each do |price|
-					y << SingleBet.new(@stake, price)
-				end 
-				@prices.combination(2) do |combination|
-					y << MultipleBet.new(@stake, combination)
-				end
-				@prices.combination(3) do |combination|
-					y << MultipleBet.new(@stake, combination)
+				@prices.combination(3) do |prices|
+					prices.each do |price|
+						y << SingleBet.new(@stake, price)
+					end 
+					prices.combination(2) do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					y << MultipleBet.new(@stake, prices)
 				end
 			end
 		end
@@ -204,9 +204,17 @@ module BetCalculator
 	class Yap < BetType
 		def bets
 			Enumerator.new do |y|
-				Patent.new(@stake, @prices).bets.each { |e| y << e }
-				@prices.combination(4) do |combination|
-					y << MultipleBet.new(@stake, combination)
+				@prices.combination(4) do |prices|
+					prices.each do |price|
+						y << SingleBet.new(@stake, price)
+					end 
+					prices.combination(2) do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(3) do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					y << MultipleBet.new(@stake, prices)
 				end
 			end
 		end
@@ -218,9 +226,20 @@ module BetCalculator
 	class Lucky31 < BetType
 		def bets
 			Enumerator.new do |y|
-				Lucky15.new(@stake, @prices).bets.each { |e| y << e }
-				@prices.combination(5) do |combination|
-					y << MultipleBet.new(@stake, combination)
+				@prices.combination(5) do |prices|
+					prices.each do |price|
+						y << SingleBet.new(@stake, price)
+					end 
+					prices.combination(2) do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(3) do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(4) do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end	
+					y << MultipleBet.new(@stake, prices)
 				end
 			end
 		end
@@ -229,9 +248,23 @@ module BetCalculator
 	class Lucky63 < BetType
 		def bets
 			Enumerator.new do |y|
-				Lucky31.new(@stake, @prices).bets.each { |e| y << e }
-				@prices.combination(6) do |combination|
-					y << MultipleBet.new(@stake, combination)
+				@prices.combination(6) do |prices|
+					prices.each do |price|
+						y << SingleBet.new(@stake, price)
+					end 
+					prices.combination(2) do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(3) do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(4) do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end	
+					prices.combination(5) do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					y << MultipleBet.new(@stake, prices)
 				end
 			end
 		end
@@ -240,10 +273,27 @@ module BetCalculator
 	class SuperHeinzWithSingles < BetType
 		def bets
 			Enumerator.new do |y|
-				@prices.each do |price| 
-					y << SingleBet.new(@stake, price)
+				@prices.combination(7).each do |prices|
+					prices.each do |price|
+						y << SingleBet.new(@stake, price)
+					end
+					prices.combination(2).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(3).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(4).each do |combination|
+						y << MultipleBet.new(@stake, combination) 
+					end
+					prices.combination(5).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end	 
+					prices.combination(6).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					y << MultipleBet.new(@stake, prices)
 				end
-				SuperHeinz.new(@stake, @prices).bets.each { |e| y << e }
 			end
 		end
 	end
@@ -251,10 +301,30 @@ module BetCalculator
 	class GoliathWithSingles < BetType
 		def bets
 			Enumerator.new do |y|
-				@prices.each do |p| 
-					y << SingleBet.new(@stake, p)
+				@prices.combination(8).each do |prices|
+					prices.each do |p| 
+						y << SingleBet.new(@stake, p)
+					end
+					prices.combination(2).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(3).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(4).each do |combination|
+						y << MultipleBet.new(@stake, combination) 
+					end
+					prices.combination(5).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end	 
+					prices.combination(6).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(7).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					y << MultipleBet.new(@stake, prices)
 				end
-				Goliath.new(@stake, @prices).bets.each { |e| y << e }
 			end
 		end
 	end
@@ -262,10 +332,33 @@ module BetCalculator
 	class BlockWithSingles < BetType
 		def bets
 			Enumerator.new do |y|
-				@prices.each do |p| 
-					y << SingleBet.new(@stake, p) 
+				@prices.combination(9).each do |prices|
+					prices.each do |p| 
+						y << SingleBet.new(@stake, p) 
+					end
+					prices.combination(2).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(3).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(4).each do |combination|
+						y << MultipleBet.new(@stake, combination) 
+					end
+					prices.combination(5).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end	 
+					prices.combination(6).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(7).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					prices.combination(8).each do |combination|
+						y << MultipleBet.new(@stake, combination)
+					end
+					y << MultipleBet.new(@stake, prices)
 				end
-				Block.new(@stake, @prices).bets.each { |e| y << e }
 			end
 		end
 	end
