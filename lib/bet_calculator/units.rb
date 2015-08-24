@@ -1,9 +1,25 @@
 module BetCalculator
 	class Unit
+		include Comparable
+
 		attr_reader :stake, :max_return
 		def initialize(stake, max_return)
 			@stake = stake
 			@max_return = max_return
+		end
+
+		def <=>(other)
+			if @stake < other.stake
+				-1
+			elseif @stake > other.stake
+				+1
+			elseif @max_return < other.max_return
+				-1
+			elseif @max_return > other.max_return
+				+1
+			else
+				0
+			end
 		end
 	end
 

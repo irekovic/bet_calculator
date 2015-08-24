@@ -1,5 +1,28 @@
 module BetCalculator
 
+	def self.full_cover(stake, count, legs)
+		Enumerator.new do |y|
+			legs.combination(count).each do |prices|
+				(2..count).each do |fold|
+					prices.combination(fold).each do |combination|
+						y << MultipleBet.new(stake, combination)
+					end
+				end
+			end
+		end
+	end
+
+	def self.full_cover_with_singles(stake, count, legs)
+		Enumerator.new do |y|
+			legs.combination(count) do |prices|
+				prices.each do |price|
+					y << SingleBet.new(stake, price)
+				end 
+				full_cover(stake, count, prices).each { |bet| y << bet }
+			end
+		end
+	end
+
 	class BetType
 		def initialize(stake, legs)
 			@stake = stake.to_f
@@ -31,192 +54,57 @@ module BetCalculator
 
 	class Trixie < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(3).each do |prices|
-					prices.combination(2).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					y << MultipleBet.new(@stake, prices)
-				end
-			end
+			BetCalculator.full_cover(@stake, 3, @prices)
 		end
 	end
 
 	class Yankee < BetType
 		def bets
-			Enumerator.new do |y|
-					@prices.combination(4).each do |prices| 
-						prices.combination(2).each do |combination|
-							y << MultipleBet.new(@stake, combination)
-						end
-						prices.combination(3).each do |combination|
-							y << MultipleBet.new(@stake, combination)
-						end
-						y << MultipleBet.new(@stake, prices) 
-					end
-			end
+			BetCalculator.full_cover(@stake, 4, @prices)
 		end
 	end
 
 	class Canadian < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(5).each do |prices| 
-					prices.combination(2).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(3).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(4).each do |combination|
-						y << MultipleBet.new(@stake, combination) 
-					end
-					y << MultipleBet.new(@stake, prices) 
-				end
-			end
+			BetCalculator.full_cover(@stake, 5, @prices)
 		end
 	end
 
 
 	class Heinz < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(6).each do |prices|
-					prices.combination(2).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(3).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(4).each do |combination|
-						y << MultipleBet.new(@stake, combination) 
-					end
-					prices.combination(5).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end	 
-					y << MultipleBet.new(@stake, prices)
-				end
-			end
+			BetCalculator.full_cover(@stake, 6, @prices)
 		end
 	end
 
 	class SuperHeinz < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(7).each do |prices|
-					prices.combination(2).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(3).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(4).each do |combination|
-						y << MultipleBet.new(@stake, combination) 
-					end
-					prices.combination(5).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end	 
-					prices.combination(6).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					y << MultipleBet.new(@stake, prices)
-				end
-			end
+			BetCalculator.full_cover(@stake, 7, @prices)
 		end
 	end
 
 	class Goliath < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(8).each do |prices|
-					prices.combination(2).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(3).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(4).each do |combination|
-						y << MultipleBet.new(@stake, combination) 
-					end
-					prices.combination(5).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end	 
-					prices.combination(6).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(7).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					y << MultipleBet.new(@stake, prices)
-				end
-			end
+			BetCalculator.full_cover(@stake, 8, @prices)
 		end
 	end
 
 
 	class Block < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(9).each do |prices|
-					prices.combination(2).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(3).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(4).each do |combination|
-						y << MultipleBet.new(@stake, combination) 
-					end
-					prices.combination(5).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end	 
-					prices.combination(6).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(7).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(8).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					y << MultipleBet.new(@stake, prices)
-				end
-			end
+			BetCalculator.full_cover(@stake, 9, @prices)
 		end
 	end
 
 	class Patent < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(3) do |prices|
-					prices.each do |price|
-						y << SingleBet.new(@stake, price)
-					end 
-					prices.combination(2) do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					y << MultipleBet.new(@stake, prices)
-				end
-			end
+			BetCalculator.full_cover_with_singles(@stake, 3, @prices)
 		end
 	end
 
 	class Yap < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(4) do |prices|
-					prices.each do |price|
-						y << SingleBet.new(@stake, price)
-					end 
-					prices.combination(2) do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(3) do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					y << MultipleBet.new(@stake, prices)
-				end
-			end
+			BetCalculator.full_cover_with_singles @stake, 4, @prices
 		end
 	end
 
@@ -225,141 +113,31 @@ module BetCalculator
 
 	class Lucky31 < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(5) do |prices|
-					prices.each do |price|
-						y << SingleBet.new(@stake, price)
-					end 
-					prices.combination(2) do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(3) do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(4) do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end	
-					y << MultipleBet.new(@stake, prices)
-				end
-			end
+			BetCalculator.full_cover_with_singles @stake, 5, @prices
 		end
 	end
 
 	class Lucky63 < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(6) do |prices|
-					prices.each do |price|
-						y << SingleBet.new(@stake, price)
-					end 
-					prices.combination(2) do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(3) do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(4) do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end	
-					prices.combination(5) do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					y << MultipleBet.new(@stake, prices)
-				end
-			end
+			BetCalculator.full_cover_with_singles @stake, 6, @prices
 		end
 	end
 
 	class SuperHeinzWithSingles < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(7).each do |prices|
-					prices.each do |price|
-						y << SingleBet.new(@stake, price)
-					end
-					prices.combination(2).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(3).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(4).each do |combination|
-						y << MultipleBet.new(@stake, combination) 
-					end
-					prices.combination(5).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end	 
-					prices.combination(6).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					y << MultipleBet.new(@stake, prices)
-				end
-			end
+			BetCalculator.full_cover_with_singles @stake, 7, @prices
 		end
 	end
 
 	class GoliathWithSingles < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(8).each do |prices|
-					prices.each do |p| 
-						y << SingleBet.new(@stake, p)
-					end
-					prices.combination(2).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(3).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(4).each do |combination|
-						y << MultipleBet.new(@stake, combination) 
-					end
-					prices.combination(5).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end	 
-					prices.combination(6).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(7).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					y << MultipleBet.new(@stake, prices)
-				end
-			end
+			BetCalculator.full_cover_with_singles @stake, 8, @prices
 		end
 	end
 
 	class BlockWithSingles < BetType
 		def bets
-			Enumerator.new do |y|
-				@prices.combination(9).each do |prices|
-					prices.each do |p| 
-						y << SingleBet.new(@stake, p) 
-					end
-					prices.combination(2).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(3).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(4).each do |combination|
-						y << MultipleBet.new(@stake, combination) 
-					end
-					prices.combination(5).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end	 
-					prices.combination(6).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(7).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					prices.combination(8).each do |combination|
-						y << MultipleBet.new(@stake, combination)
-					end
-					y << MultipleBet.new(@stake, prices)
-				end
-			end
+			BetCalculator.full_cover_with_singles @stake, 9, @prices
 		end
 	end
 
