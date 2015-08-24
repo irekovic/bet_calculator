@@ -252,17 +252,25 @@ module BetCalculator
 		end
 	end
 
+	def self.union_jack(elements)
+		Enumerator.new do |y|
+			y << elements.values_at(0,1,2)
+			y << elements.values_at(3,4,5)
+			y << elements.values_at(6,7,8)
+			y << elements.values_at(0,3,6)
+			y << elements.values_at(1,4,7)
+			y << elements.values_at(2,5,8)
+			y << elements.values_at(0,4,8)
+			y << elements.values_at(2,4,6)
+		end
+	end
+
 	class UnionJackTreble < BetType
 		def bets
 			Enumerator.new do |y|
-				Accumulator.new(@stake, @prices.values_at(0,1,2)).bets.each { |e| y << e }
-				Accumulator.new(@stake, @prices.values_at(3,4,5)).bets.each { |e| y << e }
-				Accumulator.new(@stake, @prices.values_at(6,7,8)).bets.each { |e| y << e }
-				Accumulator.new(@stake, @prices.values_at(0,3,6)).bets.each { |e| y << e }
-				Accumulator.new(@stake, @prices.values_at(1,4,7)).bets.each { |e| y << e }
-				Accumulator.new(@stake, @prices.values_at(2,5,8)).bets.each { |e| y << e }
-				Accumulator.new(@stake, @prices.values_at(0,4,8)).bets.each { |e| y << e }
-				Accumulator.new(@stake, @prices.values_at(2,4,6)).bets.each { |e| y << e }
+				BetCalculator.union_jack(@prices).each do |legs| 
+					Accumulator.new(@stake, legs).bets.each { |e| y << e } 
+				end
 			end
 		end
 	end
@@ -270,14 +278,9 @@ module BetCalculator
 	class UnionJackTrixie < BetType
 		def bets
 			Enumerator.new do |y|
-				Trixie.new(@stake, @prices.values_at(0,1,2)).bets.each { |e| y << e }
-				Trixie.new(@stake, @prices.values_at(3,4,5)).bets.each { |e| y << e }
-				Trixie.new(@stake, @prices.values_at(6,7,8)).bets.each { |e| y << e }
-				Trixie.new(@stake, @prices.values_at(0,3,6)).bets.each { |e| y << e }
-				Trixie.new(@stake, @prices.values_at(1,4,7)).bets.each { |e| y << e }
-				Trixie.new(@stake, @prices.values_at(2,5,8)).bets.each { |e| y << e }
-				Trixie.new(@stake, @prices.values_at(0,4,8)).bets.each { |e| y << e }
-				Trixie.new(@stake, @prices.values_at(2,4,6)).bets.each { |e| y << e }
+				BetCalculator.union_jack(@prices).each do |legs|
+					Trixie.new(@stake, legs).bets.each { |e| y << e }
+				end
 			end
 		end
 	end
@@ -285,14 +288,9 @@ module BetCalculator
 	class UnionJackPatent < BetType
 		def bets
 			Enumerator.new do |y|
-				Patent.new(@stake, @prices.values_at(0,1,2)).bets.each { |e| y << e }
-				Patent.new(@stake, @prices.values_at(3,4,5)).bets.each { |e| y << e }
-				Patent.new(@stake, @prices.values_at(6,7,8)).bets.each { |e| y << e }
-				Patent.new(@stake, @prices.values_at(0,3,6)).bets.each { |e| y << e }
-				Patent.new(@stake, @prices.values_at(1,4,7)).bets.each { |e| y << e }
-				Patent.new(@stake, @prices.values_at(2,5,8)).bets.each { |e| y << e }
-				Patent.new(@stake, @prices.values_at(0,4,8)).bets.each { |e| y << e }
-				Patent.new(@stake, @prices.values_at(2,4,6)).bets.each { |e| y << e }
+				BetCalculator.union_jack(@prices).each do |legs|
+					Patent.new(@stake, legs).bets.each { |e| y << e }
+				end
 			end
 		end
 	end
@@ -300,14 +298,9 @@ module BetCalculator
 	class UnionJackRoundRobin < BetType
 		def bets
 			Enumerator.new do |y|
-				RoundRobin.new(@stake, @prices.values_at(0,1,2)).bets.each { |e| y << e }
-				RoundRobin.new(@stake, @prices.values_at(3,4,5)).bets.each { |e| y << e }
-				RoundRobin.new(@stake, @prices.values_at(6,7,8)).bets.each { |e| y << e }
-				RoundRobin.new(@stake, @prices.values_at(0,3,6)).bets.each { |e| y << e }
-				RoundRobin.new(@stake, @prices.values_at(1,4,7)).bets.each { |e| y << e }
-				RoundRobin.new(@stake, @prices.values_at(2,5,8)).bets.each { |e| y << e }
-				RoundRobin.new(@stake, @prices.values_at(0,4,8)).bets.each { |e| y << e }
-				RoundRobin.new(@stake, @prices.values_at(2,4,6)).bets.each { |e| y << e }
+				BetCalculator.union_jack(@prices).each do |legs|
+					RoundRobin.new(@stake, legs).bets.each { |e| y << e }
+				end
 			end
 		end
 	end

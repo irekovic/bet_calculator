@@ -1,4 +1,3 @@
-require 'bet_calculator/price'
 require 'bet_calculator/units'
 require 'bet_calculator/bets'
 require 'bet_calculator/bet_types'
