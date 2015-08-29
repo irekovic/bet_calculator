@@ -7,7 +7,8 @@ module BetCalculator
       @price = price.to_f
       @won = won.to_f
       @void = void.to_f
-      raise "win + void percent must be <= 1.0" unless @won + @void <= 1.0
+      result = @won + @void
+      raise "win + void percent must be <= 1.0 and >= 0" unless 0 <= result and result <= 1.0
     end
 
     def won

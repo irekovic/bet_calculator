@@ -47,6 +47,7 @@ module BetCalculator
         rest.each do |bet|
           break unless _return > 0
           stake = [_return, conditional_bet.max_stake].min
+          break if stake <= 0
           rollover += _return - stake
           _return   = calculate(stake, bet)
         end
@@ -62,6 +63,7 @@ module BetCalculator
         bet.legs.each do |leg|
           _return = stake * leg.win_part.void + stake * leg.win_part.won
           stake = _return
+          break if stake <= 0
         end
         _return
     end
@@ -99,6 +101,7 @@ module BetCalculator
 
         rest.each do |b|
           stake   = [2 * bet.max_stake, win_return + place_return ].min
+          break if stake <= 0
           rollover   += win_return + place_return - stake
           win_stake, place_stake = split_conditionals_return(bet.max_stake, stake)
           win_return, place_return = calculate(win_stake, place_stake, b)
@@ -122,6 +125,7 @@ module BetCalculator
           place_return = place_stake * leg.place_part.void + place_stake * leg.place_part.won
           
           win_stake, place_stake = split_multiples_return(win_return, place_return)
+          break if win_stake + place_stake <= 0
         end
 
         return win_return, place_return

@@ -5,8 +5,8 @@ require 'bet_calculator/bet_types'
 module BetCalculator
   def self.calculate bet_type, calculator = WinOnlyCalculator.new
     result = { 
-      unit_stake:     0.0,
       number_of_bets:   0, 
+      unit_stake:     0.0,
       total_stake:    0.0, 
       total_return:   0.0,
       total_profit:   0.0 
