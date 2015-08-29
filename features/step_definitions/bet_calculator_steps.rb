@@ -12,7 +12,7 @@ Given(/^an? "([^"]*)" bet with stake "([^"]*)" on "([^"]*)"$/) do |type, stake, 
 end
 
 Given(/^a "([^"]*)" bet with stake "([^"]*)" on "([^"]*)" with place reduction "([^"]*)"$/) do |type, stake, prices, reduction_factors|
-	factors = reduction_factors.split(/,/).each.cycle
+  factors = reduction_factors.split(/,/).each.cycle
   clazz = Object::const_get("BetCalculator::#{type}")
   legs = prices.split(/,/).map do |price|
     BetCalculator::Leg.new price, factors.next
@@ -23,7 +23,7 @@ end
 
 
 When(/^I calculate a bet$/) do
-	@calculation_result = BetCalculator.calculate @bet, BetCalculator::WinOnlyCalculator.new
+  @calculation_result = BetCalculator.calculate @bet, BetCalculator::WinOnlyCalculator.new
 end
 
 When(/^I calculate each\-way bet with accumulators settled as "([^"]*)" and atc settled as "([^"]*)"$/) do |multiples_formula, atc_formula|
@@ -44,7 +44,7 @@ Then(/^total_stake should be "([^"]*)"$/) do |stake|
 end
 
 Then(/^total_return should be "([^"]*)"$/) do |potential_return|
-	expect(@calculation_result[:total_return]).to be_within(ERROR_TOLERANCE).of(potential_return.to_f)
+  expect(@calculation_result[:total_return]).to be_within(ERROR_TOLERANCE).of(potential_return.to_f)
 end
 
 Then(/^total_profit should be "([^"]*)"$/) do |profit|

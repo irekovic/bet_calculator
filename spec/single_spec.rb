@@ -1,5 +1,5 @@
 require 'bet_calculator'
 
 describe BetCalculator::Single do
-	it "correctly generates units"
+  it "correctly generates units"
 end

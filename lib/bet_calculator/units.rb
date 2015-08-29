@@ -57,7 +57,6 @@ module BetCalculator
 
     def calculate(stake, bet)
       return stake * bet.price if bet.is_a? BetCalculator::SingleBet
-        stake = bet.stake
         _return = 0
 
         bet.legs.each do |leg|
