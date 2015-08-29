@@ -2,7 +2,7 @@ module BetCalculator
   class BetType
     def initialize(stake, legs)
       @stake = stake.to_f
-      @prices = legs.to_a
+      @legs = legs.to_a
     end
 
     def bets
@@ -50,7 +50,7 @@ module BetCalculator
   class Single < BetType
     def bets
       Enumerator.new do |y|
-        @prices.each do |leg|
+        @legs.each do |leg|
           y << SingleBet.new(@stake, leg)
         end
       end
@@ -60,64 +60,64 @@ module BetCalculator
   class Accumulator < BetType
     def bets
       Enumerator.new do |y|
-        y << MultipleBet.new(@stake, @prices)
+        y << MultipleBet.new(@stake, @legs)
       end
     end
   end
 
   class Trixie < BetType
     def bets
-      full_cover(@stake, 3, @prices)
+      full_cover(@stake, 3, @legs)
     end
   end
 
   class Yankee < BetType
     def bets
-      full_cover(@stake, 4, @prices)
+      full_cover(@stake, 4, @legs)
     end
   end
 
   class Canadian < BetType
     def bets
-      full_cover(@stake, 5, @prices)
+      full_cover(@stake, 5, @legs)
     end
   end
 
 
   class Heinz < BetType
     def bets
-      full_cover(@stake, 6, @prices)
+      full_cover(@stake, 6, @legs)
     end
   end
 
   class SuperHeinz < BetType
     def bets
-      full_cover(@stake, 7, @prices)
+      full_cover(@stake, 7, @legs)
     end
   end
 
   class Goliath < BetType
     def bets
-      full_cover(@stake, 8, @prices)
+      full_cover(@stake, 8, @legs)
     end
   end
 
 
   class Block < BetType
     def bets
-      full_cover(@stake, 9, @prices)
+      full_cover(@stake, 9, @legs)
     end
   end
 
   class Patent < BetType
     def bets
-      full_cover_with_singles(@stake, 3, @prices)
+      full_cover_with_singles(@stake, 3, @legs)
     end
   end
 
   class Yap < BetType
     def bets
-      full_cover_with_singles @stake, 4, @prices
+      full_cover_with_singles @stake, 4, @legs
     end
   end
 
@@ -126,39 +126,39 @@ module BetCalculator
 
   class Lucky31 < BetType
     def bets
-      full_cover_with_singles @stake, 5, @prices
+      full_cover_with_singles @stake, 5, @legs
     end
   end
 
   class Lucky63 < BetType
     def bets
-      full_cover_with_singles @stake, 6, @prices
+      full_cover_with_singles @stake, 6, @legs
     end
   end
 
   class SuperHeinzWithSingles < BetType
     def bets
-      full_cover_with_singles @stake, 7, @prices
+      full_cover_with_singles @stake, 7, @legs
     end
   end
 
   class GoliathWithSingles < BetType
     def bets
-      full_cover_with_singles @stake, 8, @prices
+      full_cover_with_singles @stake, 8, @legs
     end
   end
 
   class BlockWithSingles < BetType
     def bets
-      full_cover_with_singles @stake, 9, @prices
+      full_cover_with_singles @stake, 9, @legs
     end
   end
 
   class SingleStakesAbout < BetType
     def bets
       Enumerator.new do |y|
-        @prices.permutation(2) do |prices|
-          first, second = *prices
+        @legs.permutation(2) do |legs|
+          first, second = *legs
           y << ConditionalBet.new(@stake, @stake, [SingleBet.new(0, first), SingleBet.new(0, second)])
         end
       end
@@ -168,20 +168,20 @@ module BetCalculator
   class DoubleStakesAbout < BetType
     def bets
       Enumerator.new do |y|
-        @prices.permutation(2) do |prices|
-          first, second = *prices
+        @legs.permutation(2) do |legs|
+          first, second = *legs
           y << ConditionalBet.new(@stake, @stake * 2, [SingleBet.new(0, first), SingleBet.new(0, second)])
         end
       end
     end
   end
 
-  class RoundRobin < Trixie
+  class RoundRobin < BetType
     def bets
       Enumerator.new do |y|
-        @prices.combination(3) do |prices|
-          Trixie.new(@stake, prices).bets.each { |e| y << e }
-          SingleStakesAbout.new(@stake, prices).bets.each { |e| y << e }
+        @legs.combination(3) do |legs|
+          Trixie.new(@stake, legs).bets.each { |e| y << e }
+          SingleStakesAbout.new(@stake, legs).bets.each { |e| y << e }
         end
       end
     end
@@ -190,8 +190,8 @@ module BetCalculator
   class Flag < BetType
     def bets
       Enumerator.new do |y|
-        Yankee.new(@stake, @prices).bets.each { |e| y << e }
-        SingleStakesAbout.new(@stake, @prices).bets.each { |e| y << e }
+        Yankee.new(@stake, @legs).bets.each { |e| y << e }
+        SingleStakesAbout.new(@stake, @legs).bets.each { |e| y << e }
       end
     end
   end
@@ -199,8 +199,8 @@ module BetCalculator
   class SuperFlag < BetType
     def bets
       Enumerator.new do |y|
-        Canadian.new(@stake, @prices).bets.each { |e| y << e }
-        SingleStakesAbout.new(@stake, @prices).bets.each { |e| y << e }
+        Canadian.new(@stake, @legs).bets.each { |e| y << e }
+        SingleStakesAbout.new(@stake, @legs).bets.each { |e| y << e }
       end
     end
   end
@@ -208,8 +208,8 @@ module BetCalculator
   class HeinzFlag < BetType
     def bets
       Enumerator.new do |y|
-        Heinz.new(@stake, @prices).bets.each { |e| y << e }
-        SingleStakesAbout.new(@stake, @prices).bets.each { |e| y << e }
+        Heinz.new(@stake, @legs).bets.each { |e| y << e }
+        SingleStakesAbout.new(@stake, @legs).bets.each { |e| y << e }
       end
     end
   end
@@ -217,8 +217,8 @@ module BetCalculator
   class SuperHeinzFlag < BetType
     def bets
       Enumerator.new do |y|
-        SuperHeinz.new(@stake, @prices).bets.each { |e| y << e }
-        SingleStakesAbout.new(@stake, @prices).bets.each { |e| y << e }
+        SuperHeinz.new(@stake, @legs).bets.each { |e| y << e }
+        SingleStakesAbout.new(@stake, @legs).bets.each { |e| y << e }
       end
     end
   end
@@ -226,8 +226,8 @@ module BetCalculator
   class GoliathFlag < BetType
     def bets
       Enumerator.new do |y|
-        Goliath.new(@stake, @prices).bets.each { |e| y << e }
-        SingleStakesAbout.new(@stake, @prices).bets.each { |e| y << e }
+        Goliath.new(@stake, @legs).bets.each { |e| y << e }
+        SingleStakesAbout.new(@stake, @legs).bets.each { |e| y << e }
       end
     end        
   end
@@ -235,8 +235,8 @@ module BetCalculator
   class Rounder < BetType
     def bets
       Enumerator.new do |y|
-        @prices.each do |price|
-          rest = @prices - [price]
+        @legs.each do |price|
+          rest = @legs - [price]
           y << ConditionalBet.new(@stake, @stake, [SingleBet.new(0, price), MultipleBet.new(0, rest)])
         end
       end
@@ -246,8 +246,8 @@ module BetCalculator
   class Roundabout < BetType
     def bets
       Enumerator.new do |y|
-        @prices.each do |price|
-          rest = @prices - [price]
+        @legs.each do |price|
+          rest = @legs - [price]
           y << ConditionalBet.new(@stake, @stake * 2, [SingleBet.new(0, price), MultipleBet.new(0, rest)])
         end
       end
@@ -257,10 +257,10 @@ module BetCalculator
   class Alphabet < BetType
     def bets
       Enumerator.new do |y|
-        Patent.new(@stake, @prices[0..2]).bets.each { |e| y << e }
-        Patent.new(@stake, @prices[3..5]).bets.each { |e| y << e }
-        Yankee.new(@stake, @prices[1..4]).bets.each { |e| y << e }
-        Accumulator.new(@stake, @prices). bets.each { |e| y << e }
+        Patent.new(@stake, @legs[0..2]).bets.each { |e| y << e }
+        Patent.new(@stake, @legs[3..5]).bets.each { |e| y << e }
+        Yankee.new(@stake, @legs[1..4]).bets.each { |e| y << e }
+        Accumulator.new(@stake, @legs). bets.each { |e| y << e }
       end
     end
   end
@@ -268,7 +268,7 @@ module BetCalculator
   class UnionJackTreble < BetType
     def bets
       Enumerator.new do |y|
-        union_jack(@prices).each do |legs| 
+        union_jack(@legs).each do |legs| 
           Accumulator.new(@stake, legs).bets.each { |e| y << e } 
         end
       end
@@ -278,7 +278,7 @@ module BetCalculator
   class UnionJackTrixie < BetType
     def bets
       Enumerator.new do |y|
-        union_jack(@prices).each do |legs|
+        union_jack(@legs).each do |legs|
           Trixie.new(@stake, legs).bets.each { |e| y << e }
         end
       end
@@ -288,7 +288,7 @@ module BetCalculator
   class UnionJackPatent < BetType
     def bets
       Enumerator.new do |y|
-        union_jack(@prices).each do |legs|
+        union_jack(@legs).each do |legs|
           Patent.new(@stake, legs).bets.each { |e| y << e }
         end
       end
@@ -298,7 +298,7 @@ module BetCalculator
   class UnionJackRoundRobin < BetType
     def bets
       Enumerator.new do |y|
-        union_jack(@prices).each do |legs|
+        union_jack(@legs).each do |legs|
           RoundRobin.new(@stake, legs).bets.each { |e| y << e }
         end
       end

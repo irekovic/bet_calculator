@@ -11,7 +11,20 @@ Given(/^an? "([^"]*)" bet with stake "([^"]*)" on "([^"]*)"$/) do |type, stake, 
   @bet = clazz.new stake, legs
 end
 
-Given(/^a "([^"]*)" bet with stake "([^"]*)" on "([^"]*)" with place reduction "([^"]*)"$/) do |type, stake, prices, reduction_factors|
+Given(/^the "([^"]*)" bet type with stake "([^"]*)" on legs:$/) do |type, stake, legs|
+  # table is a Cucumber::Core::Ast::DataTable
+  clazz = Object::const_get("BetCalculator::#{type}")
+
+  header, *rows = *legs.raw
+
+  legs = rows.map do |row|
+    BetCalculator::Leg.new row[0], row[1], Result(row[2..3])
+  end
+
+  @bet = clazz.new stake, legs
+end
+
+Given(/^an? "([^"]*)" bet with stake "([^"]*)" on "([^"]*)" with place reduction "([^"]*)"$/) do |type, stake, prices, reduction_factors|
   factors = reduction_factors.split(/,/).each.cycle
   clazz = Object::const_get("BetCalculator::#{type}")
   legs = prices.split(/,/).map do |price|
@@ -22,7 +35,7 @@ Given(/^a "([^"]*)" bet with stake "([^"]*)" on "([^"]*)" with place reduction "
 end
 
 
-When(/^I calculate a bet$/) do
+When(/^I calculate the bet$/) do
   @calculation_result = BetCalculator.calculate @bet, BetCalculator::WinOnlyCalculator.new
 end
 

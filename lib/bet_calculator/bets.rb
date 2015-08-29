@@ -1,17 +1,15 @@
 module BetCalculator
+
   class Result
     def self.won
       self.new 1, 0
     end
 
+    attr_reader :won, :void
     def initialize(win_percent, void_percent)
-      @win_percent  = win_percent.to_f
-      @void_percent = void_percent.to_f
-      raise "win + void percent must be <= 1.0" unless @win_percent + @void_percent <= 1.0
-    end
-
-    def won
-      @win_percent + @void_percent
+      @won  = win_percent.to_f
+      @void = void_percent.to_f
+      raise "win + void percent must be <= 1.0" unless @won + @void <= 1.0
     end
 
     def as_result

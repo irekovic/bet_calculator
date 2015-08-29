@@ -3,7 +3,7 @@ Feature: Bet Calculation
 
 	Scenario Outline: calculating a bet
 		Given a "<Bet Type>" bet with stake "<Stake>" on "<Prices>"
-		When I calculate a bet
+		When I calculate the bet
 		Then number_of_bets should be "<Number of Bets>"
 		And total_stake should be "<Total Stake>"
 		And total_return should be "<Total Return>"
@@ -197,8 +197,8 @@ Feature: Bet Calculation
 			|UnionJackRoundRobin  |10.00|2,3,4,5,6,7,8,9,10 |0.2|eq_div|eq_div|           160|   1_600.00|     25_000.00|     23_400.00|
 			|UnionJackRoundRobin  |10.00|2,3,4,5,6,7,8,9,10 |0.2|eq_div|wprecd|           160|   1_600.00|     25_000.00|     23_400.00|
 			|Single               |10.00|2,3,4,5            |0.2|w2wp2p|eq_div|             8|      80.00|        200.00|        120.00|
-            |Trixie               |10.00|1.1,1.2,1.3,1.4    |0.2|eq_div|eq_div|            32|     320.00|        438.30|        118.30|
-            |RoundRobin           |10.00|1.1,1.2,1.3,0.4    |0.2|w2wp2p|eq_div|            80|     800.00|        783.81|        -16.19|
-            |RoundRobin           |10.00|1.1,1.2,1.3,0.4    |0.2|w2wp2p|wprecd|            80|     800.00|        787.27|        -12.73|
-            |RoundRobin           |10.00|1.1,1.2,1.3,0.4    |0.2|eq_div|eq_div|            80|     800.00|        787.36|        -12.64|
-            |RoundRobin           |10.00|1.1,1.2,1.3,0.4    |0.2|eq_div|wprecd|            80|     800.00|        790.81|         -9.19|
+      |Trixie               |10.00|1.1,1.2,1.3,1.4    |0.2|eq_div|eq_div|            32|     320.00|        438.30|        118.30|
+      |RoundRobin           |10.00|1.1,1.2,1.3,0.4    |0.2|w2wp2p|eq_div|            80|     800.00|        783.81|        -16.19|
+      |RoundRobin           |10.00|1.1,1.2,1.3,0.4    |0.2|w2wp2p|wprecd|            80|     800.00|        787.27|        -12.73|
+      |RoundRobin           |10.00|1.1,1.2,1.3,0.4    |0.2|eq_div|eq_div|            80|     800.00|        787.36|        -12.64|
+      |RoundRobin           |10.00|1.1,1.2,1.3,0.4    |0.2|eq_div|wprecd|            80|     800.00|        790.81|         -9.19|
