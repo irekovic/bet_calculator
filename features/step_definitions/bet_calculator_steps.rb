@@ -2,23 +2,35 @@ require 'bet_calculator'
 
 ERROR_TOLERANCE = 0.005
 
+def place_price(win_price, reduction)
+  ((win_price.to_f - 1.0) * reduction.to_f) + 1.0
+end
+
 Given(/^an? "([^"]*)" bet with stake "([^"]*)" on "([^"]*)"$/) do |type, stake, prices|
   clazz = Object::const_get("BetCalculator::#{type}")
   legs = prices.split(/,/).map do |price|
-    BetCalculator::Leg.new price, 1.0
+    BetCalculator::Leg.new BetCalculator::LegPart.new(price, 1, 0)
   end
 
   @bet = clazz.new stake, legs
 end
 
-Given(/^the "([^"]*)" bet type with stake "([^"]*)" on legs:$/) do |type, stake, legs|
+Given(/^the "([^"]*)" bet type with stake "([^"]*)" on legs?:$/) do |type, stake, legs|
   # table is a Cucumber::Core::Ast::DataTable
   clazz = Object::const_get("BetCalculator::#{type}")
 
   header, *rows = *legs.raw
 
   legs = rows.map do |row|
-    BetCalculator::Leg.new row[0], row[1], Result(row[2..3])
+    case row.size
+    when 3
+      BetCalculator::Leg.new(BetCalculator::LegPart.new(row[0], row[1], row[2]))
+    else
+      BetCalculator::Leg.new(
+        BetCalculator::LegPart.new(row[0], row[2], row[3]), 
+        BetCalculator::LegPart.new(place_price(row[0], row[1]), row[4], row[5])
+      )
+    end
   end
 
   @bet = clazz.new stake, legs
@@ -28,7 +40,7 @@ Given(/^an? "([^"]*)" bet with stake "([^"]*)" on "([^"]*)" with place reduction
   factors = reduction_factors.split(/,/).each.cycle
   clazz = Object::const_get("BetCalculator::#{type}")
   legs = prices.split(/,/).map do |price|
-    BetCalculator::Leg.new price, factors.next
+    BetCalculator::Leg.new BetCalculator::LegPart.new(price, 1, 0), BetCalculator::LegPart.new(((price.to_f - 1.0) * reduction_factors.to_f) + 1.0, 1, 0)
   end
 
   @bet = clazz.new stake, legs

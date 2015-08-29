@@ -26,12 +26,3 @@ module BetCalculator
     return result
   end
 end
-
-def Result(*args, &block)
-  case args[0]
-  when Array
-    BetCalculator::Result.new *args[0]
-  else
-    raise "Illegal arguments #{args}"
-  end
-end

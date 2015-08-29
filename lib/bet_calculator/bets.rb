@@ -1,50 +1,31 @@
 module BetCalculator
 
-  class Result
-    def self.won
-      self.new 1, 0
-    end
-
-    attr_reader :won, :void
-    def initialize(win_percent, void_percent)
-      @won  = win_percent.to_f
-      @void = void_percent.to_f
+  class LegPart
+    attr_reader :price, :void
+    def initialize(price, won = 1.0, void = 0.0)
+      raise "Price must be positive" unless price.to_f > 0
+      @price = price.to_f
+      @won = won.to_f
+      @void = void.to_f
       raise "win + void percent must be <= 1.0" unless @won + @void <= 1.0
     end
 
-    def as_result
+    def won
+      @price * @won
+    end
+
+    def as_leg_part
       self
     end
   end
 
   class Leg
-    attr_reader :price, :place_reduction, :win_result, :place_result
+    attr_reader :win_part, :place_part
 
-    def initialize(price, place_reduction = 1.0, win_result = Result.won, place_result = Result.won)
-      raise IllegalArgument unless place_reduction.to_f > 0 and place_reduction.to_f <= 1
-      raise IllegalArgument unless price.to_f > 0
-      @price             = price.to_f
-      @place_reduction   = place_reduction.to_f
-      @win_result   = win_result.as_result
-      @place_result = place_result.as_result
+    def initialize(win_part, place_part = nil)
+      @win_part = win_part.as_leg_part
+      @place_part = place_part.as_leg_part if place_part
     end
-
-    def place_price
-      to_price(to_odd(@price) * @place_reduction)
-    end
-
-    def to_f
-      return @price
-    end
-
-    private
-      def to_price(odd)
-        odd.to_f + 1.0
-      end
-
-      def to_odd(price)
-        price.to_f - 1.0
-      end
   end
 
   class Bet
@@ -68,16 +49,12 @@ module BetCalculator
       @leg.price
     end
 
-    def place_price
-      @leg.place_price
+    def win_part
+      @leg.win_part
     end
 
-    def win_result
-      @leg.win_result
-    end
-
-    def place_result
-      @leg.place_result
+    def place_part
+      @leg.place_part
     end
   end
 

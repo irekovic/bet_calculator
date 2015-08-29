@@ -56,11 +56,11 @@ module BetCalculator
     end
 
     def calculate(stake, bet)
-      return stake * bet.win_result.void + stake * bet.price * bet.win_result.won if bet.is_a? BetCalculator::SingleBet
+      return stake * bet.win_part.void + stake * bet.win_part.won if bet.is_a? BetCalculator::SingleBet
         _return = 0
 
         bet.legs.each do |leg|
-          _return = stake * leg.price * (leg.win_result.won)
+          _return = stake * leg.win_part.void + stake * leg.win_part.won
           stake = _return
         end
         _return
@@ -111,13 +111,15 @@ module BetCalculator
 
     private 
       def calculate(win_stake, place_stake, bet)
-        return win_stake * bet.price * bet.win_result.won, place_stake * bet.place_price * bet.place_result.won if bet.is_a? BetCalculator::SingleBet
+        return win_stake   * bet.win_part.void   + win_stake   * bet.win_part.won, 
+               place_stake * bet.place_part.void + place_stake * bet.place_part.won if bet.is_a? BetCalculator::SingleBet
+               
         win_return = 0.0
         place_return = 0.0
 
         bet.legs.each do |leg|
-          win_return = win_stake * leg.price * leg.win_result.won
-          place_return = place_stake * leg.place_price * leg.place_result.won
+          win_return = win_stake * leg.win_part.won
+          place_return = place_stake * leg.place_part.won
           
           win_stake, place_stake = split_multiples_return(win_return, place_return)
         end

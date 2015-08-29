@@ -1,4 +1,5 @@
 module BetCalculator
+
   class BetType
     def initialize(stake, legs)
       @stake = stake.to_f
@@ -12,10 +13,10 @@ module BetCalculator
     private
       def full_cover(stake, count, legs)
         Enumerator.new do |y|
-          legs.combination(count).each do |prices|
+          legs.combination(count).each do |chosen_legs|
             (2..count).each do |fold|
-              prices.combination(fold).each do |combination|
-                y << MultipleBet.new(stake, combination)
+              chosen_legs.combination(fold).each do |folded_legs|
+                y << MultipleBet.new(stake, folded_legs)
               end
             end
           end
@@ -24,11 +25,11 @@ module BetCalculator
 
       def full_cover_with_singles(stake, count, legs)
         Enumerator.new do |y|
-          legs.combination(count) do |prices|
-            prices.each do |price|
-              y << SingleBet.new(stake, price)
+          legs.combination(count) do |legs|
+            legs.each do |leg|
+              y << SingleBet.new(stake, leg)
             end 
-            full_cover(stake, count, prices).each { |bet| y << bet }
+            full_cover(stake, count, legs).each { |bet| y << bet }
           end
         end
       end
