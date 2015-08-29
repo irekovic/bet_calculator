@@ -9,14 +9,14 @@ module BetCalculator
     end
 
     def <=>(other)
-      if @stake < other.stake
-        -1
-      elseif @stake > other.stake
+      if @max_return > other.max_return
         +1
       elseif @max_return < other.max_return
         -1
-      elseif @max_return > other.max_return
+      elseif @stake < other.stake
         +1
+      elseif @stake > other.stake
+        -1
       else
         0
       end
@@ -113,13 +113,13 @@ module BetCalculator
       def calculate(win_stake, place_stake, bet)
         return win_stake   * bet.win_part.void   + win_stake   * bet.win_part.won, 
                place_stake * bet.place_part.void + place_stake * bet.place_part.won if bet.is_a? BetCalculator::SingleBet
-               
+
         win_return = 0.0
         place_return = 0.0
 
         bet.legs.each do |leg|
-          win_return = win_stake * leg.win_part.won
-          place_return = place_stake * leg.place_part.won
+          win_return   = win_stake   * leg.win_part.void   + win_stake   * leg.win_part.won
+          place_return = place_stake * leg.place_part.void + place_stake * leg.place_part.won
           
           win_stake, place_stake = split_multiples_return(win_return, place_return)
         end

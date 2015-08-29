@@ -1,7 +1,7 @@
 module BetCalculator
 
   class LegPart
-    attr_reader :price, :void
+    attr_reader :void
     def initialize(price, won = 1.0, void = 0.0)
       raise "Price must be positive" unless price.to_f > 0
       @price = price.to_f

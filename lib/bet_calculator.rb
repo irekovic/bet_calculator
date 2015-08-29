@@ -20,7 +20,7 @@ module BetCalculator
       end
     end
 
-    result[:unit_stake]   = result[:total_stake] / result[:number_of_bets] unless result[:number_of_bets] <= 0
+    result[:unit_stake]   = result[:total_stake]  / result[:number_of_bets] unless result[:number_of_bets] <= 0
     result[:total_profit] = result[:total_return] - result[:total_stake]
 
     return result
