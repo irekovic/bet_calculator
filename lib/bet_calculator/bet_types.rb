@@ -58,10 +58,37 @@ module BetCalculator
     end
   end
 
-  class Accumulator < BetType
+  class Double < BetType
     def bets
       Enumerator.new do |y|
-        y << MultipleBet.new(@stake, @legs)
+        @legs.combination(2) do |legs|
+          y << MultipleBet.new(@stake, legs)
+        end
+      end
+    end
+  end
+
+  class Treble < BetType
+    def bets
+      Enumerator.new do |y|
+        @legs.combination(3) do |legs|
+          y << MultipleBet.new(@stake, legs)
+        end
+      end
+    end
+  end
+
+  class Accumulator < BetType
+    def initialize(stake, legs, fold = legs.size)
+      super stake, legs
+      @fold = fold
+    end
+
+    def bets
+      Enumerator.new do |y|
+        @legs.combination(@fold) do |legs|
+          y << MultipleBet.new(@stake, legs)
+        end
       end
     end
   end
@@ -261,7 +288,7 @@ module BetCalculator
         Patent.new(@stake, @legs[0..2]).bets.each { |e| y << e }
         Patent.new(@stake, @legs[3..5]).bets.each { |e| y << e }
         Yankee.new(@stake, @legs[1..4]).bets.each { |e| y << e }
-        Accumulator.new(@stake, @legs). bets.each { |e| y << e }
+        Accumulator.new(@stake, @legs, 6). bets.each { |e| y << e }
       end
     end
   end
@@ -270,7 +297,7 @@ module BetCalculator
     def bets
       Enumerator.new do |y|
         union_jack(@legs).each do |legs| 
-          Accumulator.new(@stake, legs).bets.each { |e| y << e } 
+          Accumulator.new(@stake, legs, 3).bets.each { |e| y << e } 
         end
       end
     end

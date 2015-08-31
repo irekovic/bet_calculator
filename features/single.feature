@@ -1,6 +1,5 @@
 Feature: Calculating Singles
   Calculator should know how to handle singles, with one and more than one leg.
-
     Scenario: Calculates single with exact number of legs
       Given the "Single" bet type with stake "10" on legs:
         |price|wwp|wvp|
