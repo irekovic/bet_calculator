@@ -24,12 +24,9 @@ Given(/^the "([^"]*)" bet type with stake "([^"]*)" on legs?:$/) do |type, stake
   legs = rows.map do |row|
     case row.size
     when 3
-      BetCalculator::Leg.new(BetCalculator::LegPart.new(row[0], row[1], row[2]))
+      BetCalculator.leg(*row)
     else
-      BetCalculator::Leg.new(
-        BetCalculator::LegPart.new(row[0], row[2], row[3]), 
-        BetCalculator::LegPart.new(place_price(row[0], row[1]), row[4], row[5])
-      )
+      BetCalculator.ew_leg(*row)
     end
   end
 

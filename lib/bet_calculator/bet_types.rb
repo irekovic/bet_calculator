@@ -7,16 +7,22 @@ module BetCalculator
     end
 
     def bets
-      raise "You have to implement bets in #{self.class} and return enumeration of bets from it"
+      raise "You have to implement #{self.class}#bets and return enumeration of bets from it"
     end
     
+    def valid?
+      return false unless respond_to?(:min_legs)
+      return (min_legs..max_legs).include? @legs.size if respond_to?(:max_legs)
+      return @legs.size == min_legs
+    end
+
     private
       def full_cover(stake, count, legs)
         Enumerator.new do |y|
           legs.combination(count).each do |chosen_legs|
             (2..count).each do |fold|
               chosen_legs.combination(fold).each do |folded_legs|
-                y << MultipleBet.new(stake, folded_legs)
+                y << AccumulatorBet.new(stake, folded_legs)
               end
             end
           end
@@ -27,7 +33,7 @@ module BetCalculator
         Enumerator.new do |y|
           legs.combination(count) do |legs|
             legs.each do |leg|
-              y << SingleBet.new(stake, leg)
+              y << AccumulatorBet.new(stake, leg)
             end 
             full_cover(stake, count, legs).each { |bet| y << bet }
           end
@@ -49,10 +55,18 @@ module BetCalculator
   end
 
   class Single < BetType
+    def min_legs
+      1
+    end
+
+    def max_legs
+      20
+    end
+
     def bets
       Enumerator.new do |y|
         @legs.each do |leg|
-          y << SingleBet.new(@stake, leg)
+          y << AccumulatorBet.new(@stake, leg)
         end
       end
     end
@@ -62,7 +76,7 @@ module BetCalculator
     def bets
       Enumerator.new do |y|
         @legs.combination(2) do |legs|
-          y << MultipleBet.new(@stake, legs)
+          y << AccumulatorBet.new(@stake, legs)
         end
       end
     end
@@ -72,7 +86,7 @@ module BetCalculator
     def bets
       Enumerator.new do |y|
         @legs.combination(3) do |legs|
-          y << MultipleBet.new(@stake, legs)
+          y << AccumulatorBet.new(@stake, legs)
         end
       end
     end
@@ -87,7 +101,7 @@ module BetCalculator
     def bets
       Enumerator.new do |y|
         @legs.combination(@fold) do |legs|
-          y << MultipleBet.new(@stake, legs)
+          y << AccumulatorBet.new(@stake, legs)
         end
       end
     end
@@ -187,7 +201,7 @@ module BetCalculator
       Enumerator.new do |y|
         @legs.permutation(2) do |legs|
           first, second = *legs
-          y << ConditionalBet.new(@stake, @stake, [SingleBet.new(0, first), SingleBet.new(0, second)])
+          y << ConditionalBet.new(@stake, @stake, [AccumulatorBet.new(0, first), AccumulatorBet.new(0, second)])
         end
       end
     end
@@ -198,7 +212,7 @@ module BetCalculator
       Enumerator.new do |y|
         @legs.permutation(2) do |legs|
           first, second = *legs
-          y << ConditionalBet.new(@stake, @stake * 2, [SingleBet.new(0, first), SingleBet.new(0, second)])
+          y << ConditionalBet.new(@stake, @stake * 2, [AccumulatorBet.new(0, first), AccumulatorBet.new(0, second)])
         end
       end
     end
@@ -265,7 +279,7 @@ module BetCalculator
       Enumerator.new do |y|
         @legs.each do |price|
           rest = @legs - [price]
-          y << ConditionalBet.new(@stake, @stake, [SingleBet.new(0, price), MultipleBet.new(0, rest)])
+          y << ConditionalBet.new(@stake, @stake, [AccumulatorBet.new(0, price), AccumulatorBet.new(0, rest)])
         end
       end
     end
@@ -276,7 +290,7 @@ module BetCalculator
       Enumerator.new do |y|
         @legs.each do |price|
           rest = @legs - [price]
-          y << ConditionalBet.new(@stake, @stake * 2, [SingleBet.new(0, price), MultipleBet.new(0, rest)])
+          y << ConditionalBet.new(@stake, @stake * 2, [AccumulatorBet.new(0, price), AccumulatorBet.new(0, rest)])
         end
       end
     end

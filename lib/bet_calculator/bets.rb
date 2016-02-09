@@ -35,36 +35,16 @@ module BetCalculator
     end
   end
 
-  class SingleBet < Bet
-    attr_reader :stake
-    def initialize(stake, leg)
-      @stake = stake.to_f
-      @leg = leg 
-    end
-
-    def units(calculator)
-      calculator.single self
-    end
-
-    def price
-      @leg.price
-    end
-
-    def win_part
-      @leg.win_part
-    end
-
-    def place_part
-      @leg.place_part
-    end
-  end
-
-  class MultipleBet < Bet
+  class AccumulatorBet < Bet
     attr_reader :stake, :legs
     def initialize(stake, prices)
       @stake = stake.to_f
-      @legs = prices.to_a
-      raise "You need more than 1 leg for multiple (#{@legs.size})" unless @legs.size > 1
+      if prices.respond_to?(:to_a)
+        @legs = prices.to_a
+      else
+        @legs = [prices]
+      end
+      # raise "You need more than 1 leg for multiple (#{@legs.size})" unless @legs.size > 1
     end
 
     def units(calculator)

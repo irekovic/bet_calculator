@@ -1,5 +1,5 @@
 Feature: Calculating Doubles
-  Calculator should know how to handle double & doubles, with two and more than one leg.
+  Calculator should know how to handle double & doubles, with two and more than two legs.
 
     Scenario: Calculates double with exact number of legs
       Given the "Double" bet type with stake "10" on legs:

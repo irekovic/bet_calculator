@@ -25,4 +25,16 @@ module BetCalculator
 
     return result
   end
+
+  def self.leg price, win_factor, void_factor
+    Leg.new(LegPart.new(price, win_factor, void_factor))    
+  end
+
+  def self.ew_leg price, reduction, win_win, win_void, place_win, place_void
+    Leg.new(
+        LegPart.new(price, win_win, win_void), 
+        LegPart.new(place_price(price, reduction), place_win, place_void)
+    )
+  end
+
 end
